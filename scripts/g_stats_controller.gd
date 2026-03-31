@@ -3,7 +3,6 @@ extends Control
 
 # TODO (FB): 
 # - Add screen positioning, by default the last
-# - Toggling stats on screen
 
 # Screen scaling
 const REFERENCE_VIEWPORT: Vector2 = Vector2(1920.0, 1080.0)
@@ -18,31 +17,42 @@ const MAX_SCALE: float = 4.0
 
 var _last_available_size: Vector2 = Vector2.ZERO
 
-
 func _ready() -> void:
 	_pin_to_reference_viewport()
 	_register_commands()
 
 func _register_commands() -> void:
 	ConsoleCommands.commands.register("/pop_message", {"message": TYPE_STRING, "type": TYPE_INT}, _pop_message, "Pops a message at the top right corner")
+	ConsoleCommands.commands.register("/g_stats", {"state": TYPE_BOOL}, _toggle_g_stats, "Opens or closes GSTATS")
 
-func _pop_message(_handler: ConsoleHandler, args: Dictionary) -> void:
+func _toggle_g_stats(handler: ConsoleHandler, args: Dictionary) -> void:
+	var state: bool = args.get("state", false)
+	if state:
+		_panel.open_menu()
+	else:
+		_panel.close_menu()
+		
+	handler.log_info("STATS", "%s GSTATS!" % ["Enabling" if state else "Disabling"])
+
+func _pop_message(handler: ConsoleHandler, args: Dictionary) -> void:
 	var message: String = args.get("message", "")
 	var type: GStatsNotifications.NotificationTypes = args.get("type", 0)
 	push_notification(message, type)
+	handler.log_info("STATS", "Popping up message in GSTATS")
 
 func push_notification(message: String, type: GStatsNotifications.NotificationTypes) -> void:
 	if not message.is_empty():
 		_notifications.push_notification(message, type)
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED and is_node_ready():
-		_pin_to_reference_viewport()
-
 
 func _process(_delta: float) -> void:
 	var available_size := _get_available_size()
 	if available_size != _last_available_size:
+		_pin_to_reference_viewport()
+
+#region Scaling
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_pin_to_reference_viewport()
 
 
@@ -75,3 +85,4 @@ func _get_available_size() -> Vector2:
 		return get_tree().root.get_visible_rect().size
 
 	return get_viewport_rect().size
+#endregion

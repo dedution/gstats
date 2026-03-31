@@ -1,16 +1,16 @@
 extends Node
 
 ## Singleton that spawns the graphs and notification system
-## The notification system should be open to any part of the game
 
 const TOGGLE_KEY: Key = KEY_F11
 
-# TODO: Coloring and log types like GTERM
 # TODO: System to measure and notify memory and average frame limits
 var _stats_control: GStatsController = null
+var _service: GStatsService = null
 
 func _enter_tree() -> void:
 	_spawn_menu()
+	_start_service()
 
 func _ready() -> void:
 	pass
@@ -31,5 +31,11 @@ func _spawn_menu() -> void:
 	var instance = packed_scene.instantiate()
 	add_child(instance)
 	_stats_control = instance
+	
+func _start_service() -> void:
+	if _service == null:
+		_service = GStatsService.new()
+		add_child(_service)
+	_service.start_service()
 
 #endregion
