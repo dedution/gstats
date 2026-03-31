@@ -22,6 +22,8 @@ var _cpu_model: Label = null
 var _cpu_stats: Label = null
 var _gpu_model: Label = null
 var _gpu_stats: Label = null
+var _draw_calls: Label = null
+var _render_stats: Label = null
 var _memory: Label = null
 var _ram: Label = null
 var _vram: Label = null
@@ -33,6 +35,8 @@ var _processor_name: String = ""
 var _processor_count: int = -1
 var _gpu_name: String = ""
 var _renderer_name: String = ""
+var _render_driver_name: String = ""
+var _viewport_rid: RID = RID()
 
 
 func _ready() -> void:
@@ -45,11 +49,13 @@ func _ready() -> void:
 	var initial_frame_ms := _frame_graph.target_frame_ms
 	_frame_graph.clear_samples(initial_frame_ms)
 	_smoothed_frame_ms = initial_frame_ms
+	_enable_render_time_measurements()
 	_system_total_ram = _read_system_total_ram()
 	_processor_name = _read_processor_name()
 	_processor_count = _read_processor_count()
 	_gpu_name = _read_gpu_name()
 	_renderer_name = _read_renderer_name()
+	_render_driver_name = _read_render_driver_name()
 
 	_refresh_hardware_labels()
 	_update_memory_label()
@@ -118,6 +124,8 @@ func _cache_ui_references() -> void:
 	_cpu_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowCPU/CPUStats"])
 	_gpu_model = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowGPU/GPUModel"])
 	_gpu_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowGPU/GPUStats"])
+	_draw_calls = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowRender/DrawCalls"])
+	_render_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowRender/RenderStats"])
 	_memory = _find_label([GRAPH_CONTENT_PATH + "/Memory"])
 	_ram = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowMemory/Ram", GRAPH_CONTENT_PATH + "/GraphMetaRowMemory/RAM"])
 	_vram = _find_label(
@@ -156,18 +164,40 @@ func _refresh_labels(frame_time_ms: float) -> void:
 	_set_label_text(_average_fps, "Avg FPS: %.1f  |  Avg Frame: %.1f ms" % [average_fps, average_ms])
 	_set_label_text(_performance_fps, "FPS: %.0f / %.1f ms" % [current_fps, _smoothed_frame_ms])
 	_set_label_text(_performance_average_fps, "Average FPS: %.1f / %.1f ms" % [average_fps, average_ms])
-
-	if _cpu_stats != null:
-		var threads_text := "n/a"
-		if _processor_count > 0:
-			threads_text = str(_processor_count)
-		_cpu_stats.text = "Threads: %s | Peak: %.1f ms" % [threads_text, peak_ms]
-
+	_refresh_render_debug_labels()
 
 func _refresh_hardware_labels() -> void:
-	_set_label_text(_cpu_model, "CPU: %s" % _fallback_text(_processor_name))
-	_set_label_text(_gpu_model, "GPU: %s" % _fallback_text(_gpu_name))
-	_set_label_text(_gpu_stats, "Renderer: %s" % _fallback_text(_renderer_name))
+	var cpu_details := _fallback_text(_processor_name)
+	if _processor_count > 0:
+		cpu_details += " (%d threads)" % _processor_count
+	_set_label_text(_cpu_model, "CPU: %s" % cpu_details)
+
+	var gpu_details := _fallback_text(_gpu_name)
+	if not _renderer_name.is_empty() and _renderer_name.to_lower() != gpu_details.to_lower():
+		gpu_details += " / %s" % _renderer_name
+	if not _render_driver_name.is_empty():
+		gpu_details += " (%s)" % _render_driver_name
+	_set_label_text(_gpu_model, "GPU: %s" % gpu_details)
+
+
+func _refresh_render_debug_labels() -> void:
+	var frame_budget_ms := _get_frame_budget_ms()
+	var cpu_render_ms := _read_cpu_render_time_ms()
+	var gpu_render_ms := _read_gpu_render_time_ms()
+	var draw_calls := _read_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
+	var object_count := _read_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME)
+	var primitive_count := _read_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME)
+
+	_set_label_text(_cpu_stats, _format_load_text("CPU load", cpu_render_ms, frame_budget_ms))
+	_set_label_text(_gpu_stats, _format_load_text("GPU load", gpu_render_ms, frame_budget_ms))
+	_set_label_text(_draw_calls, "Draw Calls: %s" % _format_compact_count(draw_calls))
+	_set_label_text(
+		_render_stats,
+		"Objects: %s | Primitives: %s" % [
+			_format_compact_count(object_count),
+			_format_compact_count(primitive_count),
+		]
+	)
 
 
 func _frame_time_to_fps(frame_time_ms: float) -> float:
@@ -179,12 +209,31 @@ func _frame_time_to_fps(frame_time_ms: float) -> float:
 func _update_memory_label() -> void:
 	var ram_used := _read_ram_used()
 	var vram_used := _read_rendering_info(RenderingServer.RENDERING_INFO_VIDEO_MEM_USED)
-	var ram_text := _format_memory_pair(ram_used, _system_total_ram)
+	var texture_used := _read_rendering_info(RenderingServer.RENDERING_INFO_TEXTURE_MEM_USED)
+	var buffer_used := _read_rendering_info(RenderingServer.RENDERING_INFO_BUFFER_MEM_USED)
+	var ram_text := _format_memory_usage_text(ram_used, _system_total_ram)
 	var vram_text := _format_memory_pair(vram_used)
 
 	_set_label_text(_memory, "RAM %s | VRAM %s" % [ram_text, vram_text])
-	_set_label_text(_ram, "RAM usage: %s" % ram_text)
-	_set_label_text(_vram, "VRAM usage: %s" % vram_text)
+	_set_label_text(_ram, "RAM: %s" % ram_text)
+	_set_label_text(
+		_vram,
+		"VRAM: %s | Tex %s | Buf %s" % [
+			vram_text,
+			_format_memory_pair(texture_used),
+			_format_memory_pair(buffer_used),
+		]
+	)
+
+
+func _enable_render_time_measurements() -> void:
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+
+	_viewport_rid = viewport.get_viewport_rid()
+	if _viewport_rid.is_valid() and RenderingServer.has_method("viewport_set_measure_render_time"):
+		RenderingServer.viewport_set_measure_render_time(_viewport_rid, true)
 
 
 func _read_ram_used() -> int:
@@ -219,6 +268,10 @@ func _read_gpu_name() -> String:
 	return _read_renderer_name()
 
 
+func _read_render_driver_name() -> String:
+	return _read_singleton_string(RenderingServer, "get_current_rendering_driver_name").replace("_", " ")
+
+
 func _read_renderer_name() -> String:
 	var renderer_name := _read_singleton_string(RenderingServer, "get_current_rendering_method")
 	if renderer_name.is_empty():
@@ -248,6 +301,37 @@ func _read_rendering_info(metric: int) -> int:
 	return int(RenderingServer.get_rendering_info(metric))
 
 
+func _read_cpu_render_time_ms() -> float:
+	var cpu_render_ms := RenderingServer.get_frame_setup_time_cpu()
+	if _viewport_rid.is_valid() and RenderingServer.has_method("viewport_get_measured_render_time_cpu"):
+		cpu_render_ms += RenderingServer.viewport_get_measured_render_time_cpu(_viewport_rid)
+	return cpu_render_ms if cpu_render_ms > 0.0 else -1.0
+
+
+func _read_gpu_render_time_ms() -> float:
+	if not _viewport_rid.is_valid() or not RenderingServer.has_method("viewport_get_measured_render_time_gpu"):
+		return -1.0
+
+	var gpu_render_ms := RenderingServer.viewport_get_measured_render_time_gpu(_viewport_rid)
+	return gpu_render_ms if gpu_render_ms > 0.0 else -1.0
+
+
+func _get_frame_budget_ms() -> float:
+	if _frame_graph == null:
+		return 16.67
+	return maxf(_frame_graph.target_frame_ms, 0.1)
+
+
+func _format_load_text(prefix: String, frame_time_ms: float, frame_budget_ms: float) -> String:
+	if frame_time_ms <= 0.0:
+		return "%s: n/a | n/a" % prefix
+	return "%s: %.0f%% | %.2f ms" % [
+		prefix,
+		(frame_time_ms / frame_budget_ms) * 100.0,
+		frame_time_ms,
+	]
+
+
 func _set_label_text(label: Label, text: String) -> void:
 	if label != null:
 		label.text = text
@@ -263,6 +347,38 @@ func _format_memory_pair(used_bytes: int, total_bytes: int = -1) -> String:
 	if total_bytes > 0:
 		return "%s / %s" % [_format_memory_bytes(used_bytes), _format_memory_bytes(total_bytes)]
 	return _format_memory_bytes(used_bytes)
+
+
+func _format_memory_usage_text(used_bytes: int, total_bytes: int) -> String:
+	if used_bytes <= 0:
+		return "n/a"
+	if total_bytes > 0:
+		return "%s / %s (%.0f%%)" % [
+			_format_memory_bytes(used_bytes),
+			_format_memory_bytes(total_bytes),
+			(float(used_bytes) / float(total_bytes)) * 100.0,
+		]
+	return _format_memory_bytes(used_bytes)
+
+
+func _format_compact_count(value: int) -> String:
+	if value < 0:
+		return "n/a"
+	if value < 1000:
+		return str(value)
+
+	var suffixes := ["K", "M", "B", "T"]
+	var scaled_value := float(value)
+	var suffix_index := -1
+	while scaled_value >= 1000.0 and suffix_index < suffixes.size() - 1:
+		scaled_value /= 1000.0
+		suffix_index += 1
+
+	if scaled_value >= 100.0:
+		return "%.0f%s" % [scaled_value, suffixes[suffix_index]]
+	if scaled_value >= 10.0:
+		return "%.1f%s" % [scaled_value, suffixes[suffix_index]]
+	return "%.2f%s" % [scaled_value, suffixes[suffix_index]]
 
 
 func _format_memory_bytes(bytes: int) -> String:

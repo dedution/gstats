@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dll2coddvy3ur" path="res://addons/gstats/scripts/g_stats_panel.gd" id="2_6dq4s"]
 [ext_resource type="PackedScene" uid="uid://cwkpw0ed6ofxk" path="res://addons/gstats/scenes/g_stats_notification.tscn" id="3_0a2eh"]
 [ext_resource type="Script" uid="uid://hox3xc4451e5" path="res://addons/gstats/scripts/g_stats_frame_graph.gd" id="3_6k8u3"]
+[ext_resource type="FontFile" uid="uid://btmpxpe8ogk2g" path="res://addons/gstats/resources/fonts/Starlight.ttf" id="3_jmlt8"]
 [ext_resource type="Script" uid="uid://bh8gh5cdcsieg" path="res://addons/gstats/scripts/g_stats_notifications.gd" id="4_8we0g"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2p2jk"]
@@ -21,6 +22,8 @@ shadow_color = Color(0, 0, 0, 0.2)
 shadow_size = 4
 
 [sub_resource type="LabelSettings" id="LabelSettings_5f787"]
+font = ExtResource("3_jmlt8")
+font_size = 82
 
 [sub_resource type="LabelSettings" id="LabelSettings_78nbl"]
 font_size = 14
@@ -77,7 +80,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="FrameGraphCard" type="PanelContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer" unique_id=130983462]
-custom_minimum_size = Vector2(0, 220)
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -96,7 +99,7 @@ theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1734873151]
 layout_mode = 2
-text = "GSTATS Panel"
+text = "GSTATS PANEL"
 label_settings = SubResource("LabelSettings_5f787")
 
 [node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1915199582]
@@ -147,7 +150,7 @@ size_flags_horizontal = 3
 
 [node name="CPUStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowCPU" unique_id=102163366]
 layout_mode = 2
-text = "CPU usage: 50%"
+text = "CPU load: 24% | Render 4.0 ms"
 label_settings = SubResource("LabelSettings_78nbl")
 
 [node name="GraphMetaRowGPU" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1021000450]
@@ -157,7 +160,7 @@ theme_override_constants/separation = 10
 
 [node name="GPUModel" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowGPU" unique_id=1694248353]
 layout_mode = 2
-text = "GPU: NVIDIA RTX"
+text = "GPU: NVIDIA RTX / Forward Plus"
 label_settings = SubResource("LabelSettings_78nbl")
 
 [node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowGPU" unique_id=937248623]
@@ -166,7 +169,7 @@ size_flags_horizontal = 3
 
 [node name="GPUStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowGPU" unique_id=202083211]
 layout_mode = 2
-text = "GPU usage: 50%"
+text = "GPU load: 31% | Render 5.2 ms"
 label_settings = SubResource("LabelSettings_78nbl")
 
 [node name="FrameGraph" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=45074712]
@@ -178,6 +181,25 @@ size_flags_vertical = 3
 mouse_filter = 2
 script = ExtResource("3_6k8u3")
 
+[node name="GraphMetaRowRender" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1849012301]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="DrawCalls" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowRender" unique_id=1103836916]
+layout_mode = 2
+text = "Draw Calls: 0"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowRender" unique_id=1008849035]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RenderStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowRender" unique_id=736154467]
+layout_mode = 2
+text = "Objects: 0 | Primitives: 0"
+label_settings = SubResource("LabelSettings_78nbl")
+
 [node name="GraphMetaRowMemory" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=168332208]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -185,7 +207,7 @@ theme_override_constants/separation = 10
 
 [node name="Ram" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowMemory" unique_id=1056107426]
 layout_mode = 2
-text = "RAM usage: 500 MB / 5 GB"
+text = "RAM: 500 MB / 5 GB (10%)"
 label_settings = SubResource("LabelSettings_78nbl")
 
 [node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowMemory" unique_id=1821815084]
@@ -194,7 +216,7 @@ size_flags_horizontal = 3
 
 [node name="VRam" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowMemory" unique_id=639197770]
 layout_mode = 2
-text = "VRAM usage: 500 MB"
+text = "VRAM: 500 MB | Tex 320 MB | Buf 180 MB"
 label_settings = SubResource("LabelSettings_78nbl")
 
 [node name="Notifications" type="Control" parent="ContentMargin/ContentRow" unique_id=137635355]
