@@ -1,0 +1,223 @@
+[gd_scene format=3 uid="uid://cutei751lqhce"]
+
+[ext_resource type="Script" uid="uid://bsn6l4kxus0ww" path="res://addons/gstats/scripts/g_stats_controller.gd" id="1_5f787"]
+[ext_resource type="Script" uid="uid://dll2coddvy3ur" path="res://addons/gstats/scripts/g_stats_panel.gd" id="2_6dq4s"]
+[ext_resource type="PackedScene" uid="uid://cwkpw0ed6ofxk" path="res://addons/gstats/scenes/g_stats_notification.tscn" id="3_0a2eh"]
+[ext_resource type="Script" uid="uid://hox3xc4451e5" path="res://addons/gstats/scripts/g_stats_frame_graph.gd" id="3_6k8u3"]
+[ext_resource type="Script" uid="uid://bh8gh5cdcsieg" path="res://addons/gstats/scripts/g_stats_notifications.gd" id="4_8we0g"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2p2jk"]
+bg_color = Color(0.031999998, 0.052, 0.08, 0.35686275)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.266667, 0.482353, 0.631373, 0.470588)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_5f787"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_78nbl"]
+font_size = 14
+font_color = Color(0.764706, 0.847059, 0.913725, 0.819608)
+
+[node name="GStats" type="Control" unique_id=1793426839]
+z_index = 4096
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_5f787")
+metadata/_edit_vertical_guides_ = [-13.0]
+
+[node name="ContentMargin" type="MarginContainer" parent="." unique_id=1598766848]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 500.0
+
+[node name="ContentRow" type="HBoxContainer" parent="ContentMargin" unique_id=551388853]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 732
+
+[node name="Stats" type="Control" parent="ContentMargin/ContentRow" unique_id=1785032757]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
+script = ExtResource("2_6dq4s")
+
+[node name="StatsPadding" type="MarginContainer" parent="ContentMargin/ContentRow/Stats" unique_id=893651306]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="StatsBoxContainer" type="VBoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding" unique_id=910052234]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="FrameGraphCard" type="PanelContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer" unique_id=130983462]
+custom_minimum_size = Vector2(0, 220)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_2p2jk")
+
+[node name="GraphMargin" type="MarginContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard" unique_id=2110262669]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="GraphContent" type="VBoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin" unique_id=1209752969]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1734873151]
+layout_mode = 2
+text = "GSTATS Panel"
+label_settings = SubResource("LabelSettings_5f787")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1915199582]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Separator" type="ColorRect" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaSpacer" unique_id=432499742]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GraphMetaRowPerformance" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=2090956190]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="FPS" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowPerformance" unique_id=121128808]
+layout_mode = 2
+text = "FPS: 60 / 16.7 ms"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowPerformance" unique_id=1050592249]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AvgFPS" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowPerformance" unique_id=1158430087]
+layout_mode = 2
+text = "Average FPS: 120.0 / 16.7 ms"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaRowCPU" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1416753163]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="CPUModel" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowCPU" unique_id=1104596714]
+layout_mode = 2
+text = "CPU: AMD RYZEN"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowCPU" unique_id=1907430940]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CPUStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowCPU" unique_id=102163366]
+layout_mode = 2
+text = "CPU usage: 50%"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaRowGPU" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1021000450]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="GPUModel" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowGPU" unique_id=1694248353]
+layout_mode = 2
+text = "GPU: NVIDIA RTX"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowGPU" unique_id=937248623]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GPUStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowGPU" unique_id=202083211]
+layout_mode = 2
+text = "GPU usage: 50%"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="FrameGraph" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=45074712]
+clip_contents = true
+custom_minimum_size = Vector2(0, 152)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("3_6k8u3")
+
+[node name="GraphMetaRowMemory" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=168332208]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Ram" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowMemory" unique_id=1056107426]
+layout_mode = 2
+text = "RAM usage: 500 MB / 5 GB"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowMemory" unique_id=1821815084]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VRam" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowMemory" unique_id=639197770]
+layout_mode = 2
+text = "VRAM usage: 500 MB"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="Notifications" type="Control" parent="ContentMargin/ContentRow" unique_id=137635355]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.41
+script = ExtResource("4_8we0g")
+
+[node name="NotificationMarginContainer" type="MarginContainer" parent="ContentMargin/ContentRow/Notifications" unique_id=788151488]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -19.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NotificationVerticalContainer" type="VBoxContainer" parent="ContentMargin/ContentRow/Notifications/NotificationMarginContainer" unique_id=1945598803]
+layout_mode = 2
+
+[node name="NotificationTemplate" parent="ContentMargin/ContentRow/Notifications/NotificationMarginContainer/NotificationVerticalContainer" unique_id=402676157 instance=ExtResource("3_0a2eh")]
+layout_mode = 2
