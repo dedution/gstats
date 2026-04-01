@@ -7,6 +7,8 @@ const FRAME_GRAPH_PATH := GRAPH_CONTENT_PATH + "/FrameGraph"
 @export var use_process_frame_time: bool = true
 @export_range(0.01, 1.0, 0.01) var label_smoothing: float = 0.22
 @export_range(0.05, 2.0, 0.05) var memory_refresh_interval: float = 0.25
+@export var overdraw_toggle_key: Key = KEY_F10
+@export var overdraw_visualization_enabled: bool = false
 
 @onready var _stats_padding: Control = $StatsPadding
 
@@ -24,6 +26,10 @@ var _gpu_model: Label = null
 var _gpu_stats: Label = null
 var _draw_calls: Label = null
 var _render_stats: Label = null
+var _resource_stats: Label = null
+var _allocation_stats: Label = null
+var _pipeline_stats: Label = null
+var _view_mode: Label = null
 var _memory: Label = null
 var _ram: Label = null
 var _vram: Label = null
@@ -37,6 +43,10 @@ var _gpu_name: String = ""
 var _renderer_name: String = ""
 var _render_driver_name: String = ""
 var _viewport_rid: RID = RID()
+var _last_object_count: int = -1
+var _last_resource_count: int = -1
+var _last_node_count: int = -1
+var _last_orphan_count: int = -1
 
 
 func _ready() -> void:
@@ -50,6 +60,7 @@ func _ready() -> void:
 	_frame_graph.clear_samples(initial_frame_ms)
 	_smoothed_frame_ms = initial_frame_ms
 	_enable_render_time_measurements()
+	_apply_view_debug_draw()
 	_system_total_ram = _read_system_total_ram()
 	_processor_name = _read_processor_name()
 	_processor_count = _read_processor_count()
@@ -58,6 +69,7 @@ func _ready() -> void:
 	_render_driver_name = _read_render_driver_name()
 
 	_refresh_hardware_labels()
+	_update_runtime_debug_labels(memory_refresh_interval)
 	_update_memory_label()
 	_refresh_labels(initial_frame_ms)
 	close_menu()
@@ -70,15 +82,21 @@ func _process(delta: float) -> void:
 	_memory_refresh_remaining -= delta
 	if _memory_refresh_remaining <= 0.0:
 		_memory_refresh_remaining = memory_refresh_interval
+		_update_runtime_debug_labels(memory_refresh_interval)
 		_update_memory_label()
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == GStats.TOGGLE_KEY:
-		if _stats_padding.visible:
-			close_menu()
-		else:
-			open_menu()
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == GStats.TOGGLE_KEY:
+			if _stats_padding.visible:
+				close_menu()
+			else:
+				open_menu()
+			return
+
+		if event.keycode == overdraw_toggle_key:
+			toggle_overdraw_visualization()
 
 
 func open_menu() -> void:
@@ -126,6 +144,10 @@ func _cache_ui_references() -> void:
 	_gpu_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowGPU/GPUStats"])
 	_draw_calls = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowRender/DrawCalls"])
 	_render_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowRender/RenderStats"])
+	_resource_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowResources/ResourceStats"])
+	_allocation_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowResources/AllocationStats"])
+	_pipeline_stats = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowPipelines/PipelineStats"])
+	_view_mode = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowPipelines/ViewMode"])
 	_memory = _find_label([GRAPH_CONTENT_PATH + "/Memory"])
 	_ram = _find_label([GRAPH_CONTENT_PATH + "/GraphMetaRowMemory/Ram", GRAPH_CONTENT_PATH + "/GraphMetaRowMemory/RAM"])
 	_vram = _find_label(
@@ -200,6 +222,50 @@ func _refresh_render_debug_labels() -> void:
 	)
 
 
+func _update_runtime_debug_labels(sample_interval: float) -> void:
+	var object_count := int(Performance.get_monitor(Performance.OBJECT_COUNT))
+	var resource_count := int(Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT))
+	var node_count := int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT))
+	var orphan_count := int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
+
+	_set_label_text(
+		_resource_stats,
+		"Objects: %s | Nodes: %s | Res: %s | Orphans: %s" % [
+			_format_compact_count(object_count),
+			_format_compact_count(node_count),
+			_format_compact_count(resource_count),
+			_format_compact_count(orphan_count),
+		]
+	)
+	_set_label_text(
+		_allocation_stats,
+		"Alloc/s Obj %s | Res %s" % [
+			_format_rate_per_second(object_count - _last_object_count, sample_interval, _last_object_count >= 0),
+			_format_rate_per_second(resource_count - _last_resource_count, sample_interval, _last_resource_count >= 0),
+		]
+	)
+
+	var mesh_compilations := _read_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_MESH)
+	var surface_compilations := _read_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_SURFACE)
+	var draw_compilations := _read_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_DRAW)
+	var specialization_compilations := _read_rendering_info(RenderingServer.RENDERING_INFO_PIPELINE_COMPILATIONS_SPECIALIZATION)
+	_set_label_text(
+		_pipeline_stats,
+		"Pipes M:%s S:%s D:%s X:%s" % [
+			_format_compact_count(mesh_compilations),
+			_format_compact_count(surface_compilations),
+			_format_compact_count(draw_compilations),
+			_format_compact_count(specialization_compilations),
+		]
+	)
+	_refresh_view_mode_label()
+
+	_last_object_count = object_count
+	_last_resource_count = resource_count
+	_last_node_count = node_count
+	_last_orphan_count = orphan_count
+
+
 func _frame_time_to_fps(frame_time_ms: float) -> float:
 	if frame_time_ms <= 0.0:
 		return 0.0
@@ -234,6 +300,30 @@ func _enable_render_time_measurements() -> void:
 	_viewport_rid = viewport.get_viewport_rid()
 	if _viewport_rid.is_valid() and RenderingServer.has_method("viewport_set_measure_render_time"):
 		RenderingServer.viewport_set_measure_render_time(_viewport_rid, true)
+
+
+func toggle_overdraw_visualization() -> void:
+	overdraw_visualization_enabled = not overdraw_visualization_enabled
+	_apply_view_debug_draw()
+	_refresh_view_mode_label()
+
+
+func _apply_view_debug_draw() -> void:
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+
+	viewport.debug_draw = Viewport.DEBUG_DRAW_OVERDRAW if overdraw_visualization_enabled else Viewport.DEBUG_DRAW_DISABLED
+
+
+func _refresh_view_mode_label() -> void:
+	_set_label_text(
+		_view_mode,
+		"View: %s (%s)" % [
+			"Overdraw" if overdraw_visualization_enabled else "Normal",
+			OS.get_keycode_string(overdraw_toggle_key),
+		]
+	)
 
 
 func _read_ram_used() -> int:
@@ -379,6 +469,18 @@ func _format_compact_count(value: int) -> String:
 	if scaled_value >= 10.0:
 		return "%.1f%s" % [scaled_value, suffixes[suffix_index]]
 	return "%.2f%s" % [scaled_value, suffixes[suffix_index]]
+
+
+func _format_rate_per_second(delta_value: int, sample_interval: float, has_history: bool) -> String:
+	if not has_history or sample_interval <= 0.0:
+		return "n/a"
+
+	var rate := float(delta_value) / sample_interval
+	if absf(rate) >= 100.0:
+		return "%+.0f" % rate
+	if absf(rate) >= 10.0:
+		return "%+.1f" % rate
+	return "%+.2f" % rate
 
 
 func _format_memory_bytes(bytes: int) -> String:

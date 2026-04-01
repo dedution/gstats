@@ -40,7 +40,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_5f787")
-metadata/_edit_vertical_guides_ = [-13.0]
+metadata/_edit_vertical_guides_ = [0.0]
 
 [node name="ContentMargin" type="MarginContainer" parent="." unique_id=1598766848]
 layout_mode = 0
@@ -80,7 +80,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="FrameGraphCard" type="PanelContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer" unique_id=130983462]
-custom_minimum_size = Vector2(0, 300)
+custom_minimum_size = Vector2(0, 390)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -198,6 +198,44 @@ size_flags_horizontal = 3
 [node name="RenderStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowRender" unique_id=736154467]
 layout_mode = 2
 text = "Objects: 0 | Primitives: 0"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaRowResources" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1912473810]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="ResourceStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowResources" unique_id=2018943587]
+layout_mode = 2
+text = "Objects: 0 | Nodes: 0 | Res: 0 | Orphans: 0"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowResources" unique_id=573667719]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AllocationStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowResources" unique_id=897306541]
+layout_mode = 2
+text = "Alloc/s Obj +0.0 | Res +0.0"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaRowPipelines" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1264823590]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="PipelineStats" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowPipelines" unique_id=1016327380]
+layout_mode = 2
+text = "Pipes M:0 S:0 D:0 X:0"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="GraphMetaSpacer" type="Control" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowPipelines" unique_id=371223425]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ViewMode" type="Label" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/GraphMetaRowPipelines" unique_id=1908145174]
+layout_mode = 2
+text = "View: Normal (F10)"
 label_settings = SubResource("LabelSettings_78nbl")
 
 [node name="GraphMetaRowMemory" type="BoxContainer" parent="ContentMargin/ContentRow/Stats/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=168332208]
