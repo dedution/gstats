@@ -1,5 +1,5 @@
 @tool
-class_name GStatsFrameGraph
+class_name StatsFrameGraph
 extends Control
 
 signal sample_added(frame_time_ms: float)

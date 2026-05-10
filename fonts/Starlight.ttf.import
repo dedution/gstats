@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://cy1vtlk4lgebi"
-path="res://.godot/imported/StripedSansBlack.ttf-024af60300d00209f5a6d4dc3060c11d.fontdata"
+uid="uid://btmpxpe8ogk2g"
+path="res://.godot/imported/Starlight.ttf-6732dca5ac1d47c8ee951ceaddd77397.fontdata"
 
 [deps]
 
-source_file="res://addons/gstats/resources/fonts/StripedSansBlack.ttf"
-dest_files=["res://.godot/imported/StripedSansBlack.ttf-024af60300d00209f5a6d4dc3060c11d.fontdata"]
+source_file="res://addons/gstats/fonts/Starlight.ttf"
+dest_files=["res://.godot/imported/Starlight.ttf-6732dca5ac1d47c8ee951ceaddd77397.fontdata"]
 
 [params]
 

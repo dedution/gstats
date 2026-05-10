@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://cwkpw0ed6ofxk"]
 
+[ext_resource type="Script" uid="uid://d1506mupaqj2q" path="res://addons/gstats/scripts/stats_notification.gd" id="1_312rp"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2p2jk"]
 bg_color = Color(0.031999998, 0.052, 0.08, 0.35686275)
 border_width_left = 1
@@ -28,6 +30,7 @@ custom_minimum_size = Vector2(400, 45)
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_2p2jk")
+script = ExtResource("1_312rp")
 
 [node name="Message" type="Label" parent="." unique_id=1089226057]
 custom_minimum_size = Vector2(400, 40)

@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://cutei751lqhce"]
+
+[ext_resource type="Script" uid="uid://bsn6l4kxus0ww" path="res://addons/gstats/scripts/stats_controller.gd" id="1_5nodm"]
+[ext_resource type="Script" uid="uid://bh8gh5cdcsieg" path="res://addons/gstats/scripts/stats_notifications.gd" id="5_y57cw"]
+[ext_resource type="PackedScene" uid="uid://cwkpw0ed6ofxk" path="res://addons/gstats/scenes/stats_notification_single.tscn" id="6_cnrmr"]
+
+[node name="Stats" type="Control" unique_id=1793426839]
+z_index = 4096
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_5nodm")
+metadata/_edit_vertical_guides_ = [0.0]
+
+[node name="ContentMargin" type="MarginContainer" parent="." unique_id=1598766848]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 500.0
+
+[node name="ContentRow" type="HBoxContainer" parent="ContentMargin" unique_id=551388853]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 732
+
+[node name="Notifications" type="Control" parent="ContentMargin/ContentRow" unique_id=137635355 node_paths=PackedStringArray("_notification_template")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.41
+script = ExtResource("5_y57cw")
+_notification_template = NodePath("NotificationMarginContainer/NotificationVerticalContainer/NotificationTemplate")
+
+[node name="NotificationMarginContainer" type="MarginContainer" parent="ContentMargin/ContentRow/Notifications" unique_id=788151488]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -19.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NotificationVerticalContainer" type="VBoxContainer" parent="ContentMargin/ContentRow/Notifications/NotificationMarginContainer" unique_id=1945598803]
+layout_mode = 2
+
+[node name="NotificationTemplate" parent="ContentMargin/ContentRow/Notifications/NotificationMarginContainer/NotificationVerticalContainer" unique_id=402676157 instance=ExtResource("6_cnrmr")]
+layout_mode = 2
