@@ -8,6 +8,7 @@ const BASE_CONTENT_SIZE: Vector2 = Vector2(1920.0, 500.0)
 const MIN_SCALE: float = 0.01
 const MAX_SCALE: float = 4.0
 
+## Convert them into export vars for better control
 @onready var _content_margin: Control = $ContentMargin
 @onready var _notifications: StatsNotifications = $ContentMargin/ContentRow/Notifications
 

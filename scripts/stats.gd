@@ -2,7 +2,7 @@ extends Node
 
 const SCENE_PATH := "%s/scenes/stats.tscn"
 
-## Singleton that spawns the graphs and notification system
+## Main Stats singleton. Initializes the API
 
 # TODO: System to measure and notify memory and average frame limits
 var _stats_control: StatsController = null

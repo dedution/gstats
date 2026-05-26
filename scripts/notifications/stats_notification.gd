@@ -30,6 +30,7 @@ const GRADIENT_CORNER_SEGMENTS: int = 5
 
 var _timer: Timer
 
+
 func _ready() -> void:
 	self.visible = true
 	self.modulate = Color(1.0, 1.0, 1.0, 0.0)
@@ -60,7 +61,7 @@ func set_message(
 
 
 func _exit_tree() -> void:
-	if !_timer.is_stopped():
+	if _timer and !_timer.is_stopped():
 		_timer.stop()
 
 

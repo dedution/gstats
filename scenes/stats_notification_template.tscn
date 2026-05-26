@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cwkpw0ed6ofxk"]
 
-[ext_resource type="Script" uid="uid://d1506mupaqj2q" path="res://addons/gstats/scripts/stats_notification.gd" id="1_312rp"]
+[ext_resource type="Script" uid="uid://d1506mupaqj2q" path="res://addons/gstats/scripts/notifications/stats_notification.gd" id="1_312rp"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2p2jk"]
 bg_color = Color(0.031999998, 0.052, 0.08, 0.35686275)

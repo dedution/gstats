@@ -1,8 +1,28 @@
 [gd_scene format=3 uid="uid://cutei751lqhce"]
 
 [ext_resource type="Script" uid="uid://bsn6l4kxus0ww" path="res://addons/gstats/scripts/stats_controller.gd" id="1_5nodm"]
-[ext_resource type="Script" uid="uid://bh8gh5cdcsieg" path="res://addons/gstats/scripts/stats_notifications.gd" id="5_y57cw"]
-[ext_resource type="PackedScene" uid="uid://cwkpw0ed6ofxk" path="res://addons/gstats/scenes/stats_notification_single.tscn" id="6_cnrmr"]
+[ext_resource type="Script" uid="uid://c6jsd7tigdrbu" path="res://addons/gstats/scripts/stats_panel.gd" id="2_q8twb"]
+[ext_resource type="Script" uid="uid://hox3xc4451e5" path="res://addons/gstats/scripts/stats_frame_graph.gd" id="3_5nodm"]
+[ext_resource type="Script" uid="uid://bh8gh5cdcsieg" path="res://addons/gstats/scripts/notifications/stats_notifications.gd" id="5_y57cw"]
+[ext_resource type="PackedScene" uid="uid://cwkpw0ed6ofxk" path="res://addons/gstats/scenes/stats_notification_template.tscn" id="6_cnrmr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2p2jk"]
+bg_color = Color(0.031999998, 0.052, 0.08, 0.35686275)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.266667, 0.482353, 0.631373, 0.470588)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.2)
+shadow_size = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_78nbl"]
+font_size = 14
+font_color = Color(0.764706, 0.847059, 0.913725, 0.819608)
 
 [node name="Stats" type="Control" unique_id=1793426839]
 z_index = 4096
@@ -27,6 +47,167 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 732
+
+[node name="StatsPanel" type="Control" parent="ContentMargin/ContentRow" unique_id=1395715445 node_paths=PackedStringArray("frame_graph", "label_fps", "label_average_fps", "label_cpu_model", "label_cpu_stats", "label_gpu_model", "label_gpu_stats", "label_draw_calls", "label_resources", "label_ram_usage", "label_vram_usage")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
+script = ExtResource("2_q8twb")
+frame_graph = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/FrameGraph")
+label_fps = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowPerformance/FPS")
+label_average_fps = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowPerformance/AvgFPS")
+label_cpu_model = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowCPUInfo/CPUModel")
+label_cpu_stats = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowCPUInfo/CPUStats")
+label_gpu_model = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowGPUInfo/GPUModel")
+label_gpu_stats = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowGPUInfo/GPUStats")
+label_draw_calls = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowRenderInfo/DrawCalls")
+label_resources = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowResourcesInfo/ResourceStats")
+label_ram_usage = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowMemoryInfo/Ram")
+label_vram_usage = NodePath("StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowMemoryInfo/VRam")
+
+[node name="StatsPadding" type="MarginContainer" parent="ContentMargin/ContentRow/StatsPanel" unique_id=668217816]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="StatsBoxContainer" type="VBoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding" unique_id=584773249]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="FrameGraphCard" type="PanelContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer" unique_id=1903620704]
+custom_minimum_size = Vector2(0, 390)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_2p2jk")
+
+[node name="GraphMargin" type="MarginContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard" unique_id=1220565292]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="GraphContent" type="VBoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin" unique_id=778561132]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RowPerformance" type="BoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1964309238]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="FPS" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowPerformance" unique_id=234512343]
+layout_mode = 2
+text = "FPS: 60 / 16.7 ms"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="Spacer" type="Control" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowPerformance" unique_id=272800533]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AvgFPS" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowPerformance" unique_id=1251944088]
+layout_mode = 2
+text = "Avg: 60 / 16.7 ms | Peak: 16.7 ms"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="RowCPUInfo" type="BoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1890472827]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="CPUModel" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowCPUInfo" unique_id=1414080814]
+layout_mode = 2
+text = "CPU: AMD RYZEN"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="Spacer" type="Control" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowCPUInfo" unique_id=317763358]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CPUStats" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowCPUInfo" unique_id=1086218010]
+layout_mode = 2
+text = "Load: 24%"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="RowGPUInfo" type="BoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1822876694]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="GPUModel" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowGPUInfo" unique_id=1234798000]
+layout_mode = 2
+text = "GPU: NVIDIA RTX"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="Spacer" type="Control" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowGPUInfo" unique_id=716669357]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GPUStats" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowGPUInfo" unique_id=1862423882]
+layout_mode = 2
+text = "Load: 24%"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="FrameGraph" type="Control" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1214699105]
+clip_contents = true
+custom_minimum_size = Vector2(0, 152)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("3_5nodm")
+graph_ceiling_ms = 50.0
+
+[node name="RowRenderInfo" type="BoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1639202895]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="DrawCalls" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowRenderInfo" unique_id=1042214478]
+layout_mode = 2
+text = "Draw Calls: 0"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="RowResourcesInfo" type="BoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=464901545]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="ResourceStats" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowResourcesInfo" unique_id=847107944]
+layout_mode = 2
+text = "Objects: 0 | Nodes: 0 | Orphans: 0"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="RowMemoryInfo" type="BoxContainer" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent" unique_id=1254841048]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Ram" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowMemoryInfo" unique_id=544697432]
+layout_mode = 2
+text = "RAM: 500 MB / 5 GB (10%)"
+label_settings = SubResource("LabelSettings_78nbl")
+
+[node name="Spacer" type="Control" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowMemoryInfo" unique_id=1124641000]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VRam" type="Label" parent="ContentMargin/ContentRow/StatsPanel/StatsPadding/StatsBoxContainer/FrameGraphCard/GraphMargin/GraphContent/RowMemoryInfo" unique_id=1966054168]
+layout_mode = 2
+text = "VRAM: 500 MiB | Tex: 320 MiB | Buf: 180 MiB"
+label_settings = SubResource("LabelSettings_78nbl")
 
 [node name="Notifications" type="Control" parent="ContentMargin/ContentRow" unique_id=137635355 node_paths=PackedStringArray("_notification_template")]
 layout_mode = 2
