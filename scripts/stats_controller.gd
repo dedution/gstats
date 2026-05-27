@@ -10,7 +10,9 @@ const MAX_SCALE: float = 4.0
 
 ## Convert them into export vars for better control
 @onready var _content_margin: Control = $ContentMargin
+@onready var _panel: StatsPanel = $ContentMargin/ContentRow/StatsPanel
 @onready var _notifications: StatsNotifications = $ContentMargin/ContentRow/Notifications
+@onready var _service_warning: Control = $Service
 
 var _last_available_size: Vector2 = Vector2.ZERO
 
@@ -18,6 +20,7 @@ var _last_available_size: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	_adjust_content_size()
 	_register_commands()
+	_panel.set_panel_state(false)
 
 
 func _register_commands() -> void:
@@ -36,6 +39,9 @@ func _pop_message(handler: ConsoleHandler, args: Dictionary) -> void:
 	handler.log_info("STATS", "Notifying via stats")
 
 
+func set_service_mode(state: bool) -> void:
+	_service_warning.visible = state
+
 ## Push notification
 func push_notification(message: String, type: StatsNotification.NotificationTypes) -> void:
 	if not message.is_empty():
@@ -47,6 +53,9 @@ func _process(_delta: float) -> void:
 	if available_size != _last_available_size:
 		_adjust_content_size()
 
+func _input(event) -> void:
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F11:
+		_panel.set_panel_state(!_panel.get_panel_state())
 
 #region Scaling
 func _notification(what: int) -> void:

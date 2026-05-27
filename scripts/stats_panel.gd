@@ -24,6 +24,7 @@ var _smoothed_frame_ms: float = 16.67
 var _memory_refresh_remaining: float = 0.0
 var _viewport_rid: RID = RID()
 
+@onready var stats_padding: Control = $StatsPadding
 
 func _ready() -> void:
 	_enable_render_time_measurements()
@@ -44,6 +45,12 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	_disable_render_time_measurements()
 
+
+func set_panel_state(state: bool) -> void:
+	stats_padding.visible = state
+	
+func get_panel_state() -> bool:
+	return stats_padding.visible
 
 func record_frame_time(frame_time_ms: float) -> void:
 	var sample := maxf(frame_time_ms, 0.01)
