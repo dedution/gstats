@@ -53,6 +53,7 @@ func start_service() -> void:
 	_reset_data()
 	_is_running = true
 	on_service_start.emit()
+	print("Analysis mode started!")
 
 
 func stop_service() -> void:
@@ -60,6 +61,7 @@ func stop_service() -> void:
 		return
 	_is_running = false
 	on_service_end.emit()
+	print("Analysis mode stopped.")
 
 
 func _reset_data() -> void:

@@ -36,6 +36,7 @@ font_size = 54
 shadow_color = Color(0, 0, 0, 0.44313726)
 
 [node name="Stats" type="Control" unique_id=1793426839]
+process_mode = 3
 z_index = 4096
 clip_contents = true
 layout_mode = 3

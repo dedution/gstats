@@ -61,6 +61,7 @@ func _spawn_notification(
 
 	notification.set_message(message, type, duration, _fade_out_notification.bind(notification))
 	notification.fadein(enter_duration)
+	print("GStats Notification: %s" % message)
 
 
 func _fade_out_notification(notification: StatsNotification) -> void:
