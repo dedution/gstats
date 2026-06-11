@@ -12,10 +12,10 @@ const MAX_SCALE: float = 4.0
 @onready var _content_margin: Control = $ContentMargin
 @onready var _panel: StatsPanel = $ContentMargin/ContentRow/StatsPanel
 @onready var _notifications: StatsNotifications = $ContentMargin/ContentRow/Notifications
-@onready var _service_warning: Control = $Service
+@onready var _service_warning: Control = $ServiceWarning
 
 var _last_available_size: Vector2 = Vector2.ZERO
-
+var _cmd_memory_chunks := []
 
 func _ready() -> void:
 	_adjust_content_size()
@@ -25,22 +25,76 @@ func _ready() -> void:
 
 func _register_commands() -> void:
 	ConsoleCommands.commands.register(
-		"/pop_message",
+		"/stats_message",
 		{"message": TYPE_STRING, "type": TYPE_INT},
-		_pop_message,
-		"Pops a message at the top right corner"
+		_cmd_pop_message,
+		"Pops a stats message at the top right corner"
+	)
+	
+	ConsoleCommands.commands.register(
+		"/simulate_crash",
+		{},
+		_cmd_simulate_crash,
+		"Simulates a system crash"
+	)
+	
+	ConsoleCommands.commands.register(
+		"/simulate_leak",
+		{},
+		_cmd_simulate_memory_leak,
+		"Simulates a memory leak that increases ram 100MB per frame"
 	)
 
 
-func _pop_message(handler: ConsoleHandler, args: Dictionary) -> void:
+func _cmd_pop_message(handler: ConsoleHandler, args: Dictionary) -> void:
 	var message: String = args.get("message", "")
 	var type: StatsNotification.NotificationTypes = args.get("type", 0)
 	push_notification(message, type)
 	handler.log_info("STATS", "Notifying via stats")
 
 
+func _cmd_simulate_crash(handler: ConsoleHandler) -> void:
+	for i in range(3, 0, -1):
+		var suffix := "second" if i == 1 else "seconds"
+		handler.log_info("STATS", "Crashing in %d %s..." % [i, suffix])
+
+		if i > 1:
+			await get_tree().create_timer(1.0).timeout
+
+	# Simulate crash
+	OS.crash("Simulated crash")
+	
+	
+func _cmd_simulate_memory_leak(handler: ConsoleHandler) -> void:
+	for i in range(3, 0, -1):
+		var suffix := "second" if i == 1 else "seconds"
+		handler.log_info("STATS", "Starting leak in %d %s..." % [i, suffix])
+
+		if i > 1:
+			await get_tree().create_timer(1.0).timeout
+			
+	var allocated_mb := 0
+
+	while true:
+		var chunk := PackedByteArray()
+		chunk.resize(1024 * 1024)
+		chunk.fill(255)
+
+		_cmd_memory_chunks.append(chunk)
+		allocated_mb += 1
+
+		if allocated_mb % 100 == 0:
+			handler.log_info(
+				"STATS",
+				"Allocated %d MB" % allocated_mb
+			)
+
+			await get_tree().process_frame
+
+
 func set_service_mode(state: bool) -> void:
 	_service_warning.visible = state
+
 
 ## Push notification
 func push_notification(message: String, type: StatsNotification.NotificationTypes) -> void:

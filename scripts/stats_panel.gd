@@ -127,7 +127,7 @@ func _update_runtime_debug_labels() -> void:
 	_set_label_text(
 		label_resources,
 		(
-			"Objects: %s | Nodes: %s | Res: %s | Orphans: %s"
+			"Objects: %s | Nodes: %s | Resources: %s | Orphans: %s"
 			% [
 				StatsAPI.get_object_count(),
 				StatsAPI.get_node_count(),

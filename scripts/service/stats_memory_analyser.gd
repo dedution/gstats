@@ -1,6 +1,9 @@
 class_name MemoryAnalyser
 extends BaseAnalyzer
 
+## This memory analyser service is meant to keep track of memory, nodes and objects and alert the developers if unexpected growth is happening
+## TODO: Add support for crash detection with memory report.
+
 const RAM_HIGH_USAGE_RATIO: float = 0.85
 const RAM_GROWTH_WARN_BYTES: int = 128 * 1024 * 1024
 const RAM_GROWTH_ERROR_BYTES: int = 512 * 1024 * 1024
@@ -9,7 +12,7 @@ const OBJECT_GROWTH_HINT_COUNT: int = 64
 const NODE_GROWTH_HINT_COUNT: int = 16
 const RESOURCE_GROWTH_HINT_COUNT: int = 16
 const ORPHAN_WARN_COUNT: int = 1
-const EVENT_COOLDOWN_SECONDS: float = 15.0
+const EVENT_COOLDOWN_SECONDS: float = 5.0
 
 var _memory_samples: Array[MemorySample] = []
 var _max_sample_count: int = 240
