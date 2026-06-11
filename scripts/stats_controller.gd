@@ -16,11 +16,13 @@ const MAX_SCALE: float = 4.0
 
 var _last_available_size: Vector2 = Vector2.ZERO
 var _cmd_memory_chunks := []
+var _service_tween: Tween
 
 func _ready() -> void:
 	_adjust_content_size()
 	_register_commands()
 	_panel.set_panel_state(false)
+	set_service_mode(false, true)
 
 
 func _register_commands() -> void:
@@ -92,8 +94,23 @@ func _cmd_simulate_memory_leak(handler: ConsoleHandler) -> void:
 			await get_tree().process_frame
 
 
-func set_service_mode(state: bool) -> void:
-	_service_warning.visible = state
+func set_service_mode(state: bool, instant: bool = false) -> void:
+	if instant:
+		_service_warning.modulate.a = 1.0 if state else 0.0
+	else:
+		if _service_tween:
+			_service_tween.kill()
+
+		_service_tween = _service_warning.create_tween()
+		_service_tween.tween_property(
+			_service_warning,
+			"modulate:a",
+			1.0 if state else 0.0,
+			0.35
+		)
+
+	if state:
+		_panel.set_panel_state(false)
 
 
 ## Push notification

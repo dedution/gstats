@@ -18,6 +18,7 @@ vec3 hsv2rgb(vec3 c)
 
 void fragment()
 {
+	vec4 canvas_color = COLOR;
 	vec2 rect_size = 1.0 / SCREEN_PIXEL_SIZE;
 	vec2 pixel = UV * rect_size;
 	vec2 edge_distance = min(pixel, rect_size - pixel);
@@ -36,5 +37,5 @@ void fragment()
 	vec3 aura = hsv2rgb(vec3(fract(hue + 0.08), saturation * 0.7, brightness * 0.85));
 	vec3 color = mix(aura, rainbow, border);
 
-	COLOR = vec4(color, mask * alpha);
+	COLOR = vec4(color * canvas_color.rgb, mask * alpha * canvas_color.a);
 }

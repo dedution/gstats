@@ -23,10 +23,10 @@ content_margin_right = 11.0
 content_margin_bottom = 5.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_ygooh"]
-font_size = 12
+font_size = 20
 
 [node name="NotificationTemplate" type="PanelContainer" unique_id=402676157]
-custom_minimum_size = Vector2(400, 45)
+custom_minimum_size = Vector2(600, 70)
 size_flags_horizontal = 4
 size_flags_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_2p2jk")

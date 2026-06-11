@@ -57,6 +57,9 @@ func _spawn_service() -> void:
 	add_child(service_node)
 	_stats_service = service_node
 	_stats_service.on_process_event.connect(push_notification)
+	
+	# TODO: On service start and end, notify the signal system so that the game can properly lock up player input
+	# Also use these signal to trigger simulation parameters like game speed, automation and so on.
 	_stats_service.on_service_start.connect(_stats_control.set_service_mode.bind(true))
 	_stats_service.on_service_end.connect(_stats_control.set_service_mode.bind(false))
 
