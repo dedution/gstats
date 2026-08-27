@@ -26,21 +26,21 @@ func _ready() -> void:
 
 
 func _register_commands() -> void:
-	ConsoleCommands.commands.register(
+	Commands.register(
 		"/stats_message",
 		{"message": TYPE_STRING, "type": TYPE_INT},
 		_cmd_pop_message,
 		"Pops a stats message at the top right corner"
 	)
 	
-	ConsoleCommands.commands.register(
+	Commands.register(
 		"/simulate_crash",
 		{},
 		_cmd_simulate_crash,
 		"Simulates a system crash"
 	)
 	
-	ConsoleCommands.commands.register(
+	Commands.register(
 		"/simulate_leak",
 		{},
 		_cmd_simulate_memory_leak,

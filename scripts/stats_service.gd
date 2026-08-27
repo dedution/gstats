@@ -24,7 +24,7 @@ func _ready() -> void:
 
 
 func _register_commands() -> void:
-	ConsoleCommands.commands.register(
+	Commands.register(
 		"/analisys", {},
 		_toggle_service_mode,
 		"Enables or disables service mode"
